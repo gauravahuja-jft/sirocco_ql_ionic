@@ -13,7 +13,7 @@ import { Transfer, FileUploadOptions, TransferObject } from '@ionic-native/trans
 import gql from 'graphql-tag';
 import { getClient } from './../utils/graphql.client'
 import { Apollo } from 'apollo-angular';
-
+import { Angular2Apollo } from 'angular2-apollo'
 /*
   Generated class for the DataProvider provider.
 
@@ -28,8 +28,9 @@ export class DataProvider {
   private baseUrl: string = 'http://localhost:3000/graphql';
   uploadedFilename: string;
 
-  constructor(public http: Http,private apollo: Apollo, private camera: Camera, private file: File, private loadingCtrl: LoadingController, private toastCtrl: ToastController) {
+  constructor(public http: Http, private apollo: Angular2Apollo, private camera: Camera, private file: File, private loadingCtrl: LoadingController, private toastCtrl: ToastController) {
     console.log('Hello DataProvider Provider');
+
   }
 
   private handleError(error: any): Promise<any> {
@@ -37,45 +38,68 @@ export class DataProvider {
     return Promise.reject(error.message || error);
   }
 
-  async getPosts(): Promise<Post[]> {
-    var posts: Post[];
+  async getPosts(): Promise<any> {
+    var posts: any;
     await this.apollo.query({
       query: gql`
-        query AllPosts {
-          post {
-              id
-              content
-              date_created
-              user {
-                id
-                username  
-              }
-              likes{
-                id
-              }
+        query posts{
+          post{
+            id,
+            content,
+            dateCreated,
+            likesCount,
+            commentsCount,
+            user{ firstName, lastName }
           }
         }`
     }).toPromise().then(result => {
-      posts = this.extractPosts(result.data);
+      posts = result.data;
     }).catch(error => {
       console.log(`Error: ${error.message}`);
       });
     return posts;
   }
 
-  private extractPosts(data: any): Post[] {
-    return data as Post[]
-  }
-
-  async getComments(postId: string): Promise<Comment[]> {
-    var options = new URLSearchParams();
-    var comments = new Array<Comment>();
-    options.append('max', "10");
-    options.append('postId', postId);
-    await this.http.get(this.baseUrl + 'post/getComments', { search: options }).toPromise().then(res => {
-      comments = this.extractComments(res);
+  async getComments(postId: string): Promise<any> {
+    var comments: any;
+    await this.apollo.query({
+      query: gql`
+        query comments{
+          comment(post_id: ${postId}){
+            dateCreated,
+            commentText,
+            user{
+              username
+            }
+          }
+        }`
+    }).toPromise().then(result => {
+      comments = result.data;
+    }).catch(error => {
+      console.log(`Error: ${error.message}`);
     });
     return comments;
+  }
+
+  async likePost(userId: number, postId: number): Promise<any> {
+    var newLikeId: any;
+    await this.apollo.mutate({
+      mutation: gql`
+        mutation addLike( $postId: Int!, $userId: Int!){
+          addLike( postId:$postId, userId:$userId){
+            id
+          }
+        }`,
+      variables: {
+        postId: postId,
+        userId: userId
+      }
+    }).toPromise().then(result => {
+      newLikeId = result.data;
+    }).catch(error => {
+      console.log(`Error: ${error.message}`);
+    });
+    return newLikeId;
   }
 
   async getPost(id: string): Promise<Post> {
@@ -148,16 +172,6 @@ export class DataProvider {
     return comments;
   }
 
-  async likePost(userId: string, postId: string): Promise<boolean> {
-    var options = new URLSearchParams();
-    var result = false;
-    options.append('userId', userId);
-    options.append('postId', postId);
-    await this.http.get(this.baseUrl + 'post/likePost', { search: options }).toPromise().then(res => {
-      result = true;
-    });
-    return result;
-  }
 
   async getUser(userId: string): Promise<User> {
     var options = new URLSearchParams();

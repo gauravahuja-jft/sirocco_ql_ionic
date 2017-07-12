@@ -16,7 +16,7 @@ import { Component, Input } from '@angular/core';
 })
 export class PostComponent {
 
-  @Input('post') post: Post;
+  @Input('post') post: any;
 
   constructor(private navCtrl: NavController, private dataProvider: DataProvider, private toastCtrl: ToastController,
               private alertCtrl: AlertController) {
@@ -24,20 +24,22 @@ export class PostComponent {
   }
 
   ngOnInit() {
+    console.log(this.post)
 //    if (this.post.commentsCount == undefined || this.post.likesCount == undefined) {
-      this.dataProvider.getLikesCount(this.post.id.toString()).then(likesCount => {
-        this.post.likesCount = likesCount;
-      });
+      // this.dataProvider.getLikesCount(this.post.id.toString()).then(likesCount => {
+      //   this.post.likesCount = likesCount;
+      // });
 
-      this.dataProvider.getCommentsCount(this.post.id.toString()).then(commentsCount => {
-        this.post.commentsCount = commentsCount;
-      });
+      // this.dataProvider.getCommentsCount(this.post.id.toString()).then(commentsCount => {
+      //   this.post.commentsCount = commentsCount;
+      // });
 //    }
   }  
 
   likePost() {        //TODO: Get userid from localStorage
-    this.dataProvider.likePost("1", this.post.id.toString()).then((success: Boolean) => {
-      if (success) {
+    this.dataProvider.likePost(1, this.post.id).then(newId => {
+      console.log("Like clicked")
+      if (newId) {
         this.post.likesCount += 1;
         this.presentToast('Thanks for the like!');
       }

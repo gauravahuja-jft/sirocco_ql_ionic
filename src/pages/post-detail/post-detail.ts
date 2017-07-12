@@ -11,8 +11,8 @@ import { NavController, NavParams } from 'ionic-angular';
 })
 export class PostDetailPage {
 
-  post: Post;
-  comments : Comment[];
+  post: any;
+  comments : any;
 
   private showSpinner: boolean;
 
@@ -23,7 +23,7 @@ export class PostDetailPage {
   ngOnInit() {
     this.showSpinner = true;
     this.dataProvider.getComments(this.post.id.toString()).then(comments => {
-      this.comments = comments;
+      this.comments = comments.comment;
       this.showSpinner = false;
     });
   }  

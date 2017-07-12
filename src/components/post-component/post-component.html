@@ -4,7 +4,7 @@
       <ion-avatar item-start>
         <img src="assets/images/male_avatar.png" style="background-color: #00bcd4">
       </ion-avatar>
-      <h2>Gaurav Ahuja</h2>
+      <h2>{{post?.user.firstName}} {{post?.user.lastName}}</h2>
       <p ion-text style="font-size: 12px;">{{post?.dateCreated | momentsAgo}}</p>
     </ion-item>
 

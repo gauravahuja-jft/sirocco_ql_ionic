@@ -20,8 +20,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { Transfer } from '@ionic-native/transfer';
 import { File } from '@ionic-native/file';
 import { getClient } from './../utils/graphql.client'
-import { ApolloModule } from 'apollo-angular';
-
+//import { ApolloModule } from 'apollo-angular';
+import {ApolloModule} from 'angular2-apollo'
 @NgModule({
   declarations: [
     MyApp,

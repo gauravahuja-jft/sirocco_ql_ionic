@@ -18,7 +18,7 @@ export class MomentsAgoPipe implements PipeTransform {
      */
     transform(value: Date): string {
         if (value) {
-            this.momentsAgo = moment(value).fromNow(true);
+            this.momentsAgo = moment(value).fromNow();
             return this.momentsAgo;
         }
     }

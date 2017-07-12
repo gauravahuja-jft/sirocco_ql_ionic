@@ -10,7 +10,7 @@ import { NavController } from 'ionic-angular';
   templateUrl: 'home.html'
 })
 export class HomePage {
-  posts: Post[];
+  posts: any;
   private showSpinner: boolean;
 
   constructor(public navCtrl: NavController, private dataProvider: DataProvider) {
@@ -20,8 +20,8 @@ export class HomePage {
   ionViewWillEnter() {
     this.showSpinner = true;
     this.dataProvider.getPosts().then(result => {
-      this.posts = result;
-      console.log(this.posts);
+      this.posts = result.post;
+      console.log(this.posts.post);
       this.showSpinner = false;
     });
   }  

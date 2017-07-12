@@ -4,7 +4,8 @@ const client = new ApolloClient({
     networkInterface: createNetworkInterface({
         uri: 'http://localhost:3000/graphql',
         opts: {
-            //credentials: 'same-origin',
+            credentials: 'same-origin'
+            //mode: 'no-cors'
         },
     }),
 });
