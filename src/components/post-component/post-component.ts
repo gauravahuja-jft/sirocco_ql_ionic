@@ -37,9 +37,9 @@ export class PostComponent {
   }  
 
   likePost() {        //TODO: Get userid from localStorage
-    this.dataProvider.likePost(1, this.post.id).then(newId => {
+    this.dataProvider.likePost(this.post.id, 1).then(newId => {
       console.log("Like clicked")
-      if (newId) {
+      if (newId.addLike.id) {
         this.post.likesCount += 1;
         this.presentToast('Thanks for the like!');
       }

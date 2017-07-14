@@ -12,8 +12,8 @@ import { File } from '@ionic-native/file';
 import { Transfer, FileUploadOptions, TransferObject } from '@ionic-native/transfer';
 import gql from 'graphql-tag';
 import { getClient } from './../utils/graphql.client'
-import { Apollo } from 'apollo-angular';
 import { Angular2Apollo } from 'angular2-apollo'
+import { Apollo } from 'apollo-angular';
 /*
   Generated class for the DataProvider provider.
 
@@ -28,7 +28,7 @@ export class DataProvider {
   private baseUrl: string = 'http://localhost:3000/graphql';
   uploadedFilename: string;
 
-  constructor(public http: Http, private apollo: Angular2Apollo, private camera: Camera, private file: File, private loadingCtrl: LoadingController, private toastCtrl: ToastController) {
+  constructor(public http: Http, private apollo: Apollo, private camera: Camera, private file: File, private loadingCtrl: LoadingController, private toastCtrl: ToastController) {
     console.log('Hello DataProvider Provider');
 
   }
@@ -81,25 +81,24 @@ export class DataProvider {
     return comments;
   }
 
-  async likePost(userId: number, postId: number): Promise<any> {
-    var newLikeId: any;
+  async likePost(postId: number, userId: number): Promise<any> {
+    var newLike: any;
+
     await this.apollo.mutate({
       mutation: gql`
-        mutation addLike( $postId: Int!, $userId: Int!){
-          addLike( postId:$postId, userId:$userId){
+      mutation addLike{
+        addLike(postId: ${postId}, userId: ${userId})
+          {
             id
           }
-        }`,
-      variables: {
-        postId: postId,
-        userId: userId
-      }
+      }`
     }).toPromise().then(result => {
-      newLikeId = result.data;
-    }).catch(error => {
-      console.log(`Error: ${error.message}`);
-    });
-    return newLikeId;
+      newLike = result.data
+      console.log('got data', result);
+      }).catch(error => {
+        console.log('there was an error sending the query', error);
+    } );
+    return newLike;
   }
 
   async getPost(id: string): Promise<Post> {
