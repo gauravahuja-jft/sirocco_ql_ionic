@@ -81,8 +81,9 @@ export class DataProvider {
     return comments;
   }
 
-  async likePost(postId: number, userId: number): Promise<any> {
+  async likePost(postId: number, userId: number): Promise<boolean> {
     var newLike: any;
+    var success = false;
 
     await this.apollo.mutate({
       mutation: gql`
@@ -94,11 +95,38 @@ export class DataProvider {
       }`
     }).toPromise().then(result => {
       newLike = result.data
+        if (newLike.addLike.id) {
+          success = true;
+        }
       console.log('got data', result);
       }).catch(error => {
         console.log('there was an error sending the query', error);
     } );
-    return newLike;
+    return success;
+  }
+
+  async postComment(userId: number, postId: number, commentText: string): Promise<boolean> {
+    var newComment: any;    
+    var success = false;
+
+    await this.apollo.mutate({
+      mutation: gql`
+      mutation addComment{
+        addComment(commentText: "${commentText}", postId: ${postId}, userId: ${userId})
+          {
+            id
+          }
+      }`
+    }).toPromise().then(result => {
+      newComment = result.data
+      if (newComment.addComment.id) {
+        success = true;
+      }
+      console.log('got data', result);
+    }).catch(error => {
+      console.log('there was an error sending the query', error);
+    });
+    return success;
   }
 
   async getPost(id: string): Promise<Post> {
@@ -109,22 +137,6 @@ export class DataProvider {
       post = res.json()  ;
     });
     return post;
-  }
-
-  async postComment(userId: string, postId: string, commentText: string): Promise<boolean> {
-    var result = false;
-    
-    let headers = new Headers();
-    //headers.append('Content-Type', 'application/json');
-
-    let body = { userId: userId, postId: postId, commentText: commentText };
-    
-    await this.http.post(this.baseUrl + 'post/addComment', JSON.stringify(body), { headers: headers }).toPromise().then(res => {
-      if (res.status == 200) {
-        result = true;
-      }
-    });
-    return result;
   }
 
   async createPost(userId: string, content: string, imageLink?: string): Promise<boolean> {

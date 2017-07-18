@@ -29,6 +29,7 @@
     "@ionic-native/transfer": "^3.12.1",
     "@ionic/storage": "2.0.1",
     "apollo-angular": "^0.13.0",
+    "bootstrap": "^4.0.0-alpha.6",
     "com.synconset.imagepicker": "https://github.com/Telerik-Verified-Plugins/ImagePicker.git",
     "cordova-android": "^6.2.3",
     "cordova-browser": "^4.1.0",

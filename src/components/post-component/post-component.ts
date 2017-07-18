@@ -16,11 +16,10 @@ import { Component, Input } from '@angular/core';
 })
 export class PostComponent {
 
-  @Input('post') post: any;
+  @Input('post') post: Post;
 
   constructor(private navCtrl: NavController, private dataProvider: DataProvider, private toastCtrl: ToastController,
               private alertCtrl: AlertController) {
-
   }
 
   ngOnInit() {
@@ -37,11 +36,13 @@ export class PostComponent {
   }  
 
   likePost() {        //TODO: Get userid from localStorage
-    this.dataProvider.likePost(this.post.id, 1).then(newId => {
+    this.dataProvider.likePost(this.post.id, 1).then(success => {
       console.log("Like clicked")
-      if (newId.addLike.id) {
+      if (success) {
         this.post.likesCount += 1;
         this.presentToast('Thanks for the like!');
+      } else {
+        this.presentToast('Could not like the Post. Please retry.');
       }
     });
   }
@@ -63,13 +64,10 @@ export class PostComponent {
           text: 'Done',
           handler: data => {
             console.log('Saved clicked: ', data.text);        //TODO: Get userid from localStorage
-            this.dataProvider.postComment("1", this.post.id.toString(), data.text).then((success: Boolean) => { 
+            this.dataProvider.postComment(1, this.post.id, data.text).then((success: Boolean) => { 
               if (success) {
+                this.post.commentsCount += 1;
                 this.presentToast('Comment Posted.');
-                
-                this.dataProvider.getCommentsCount(this.post.id.toString()).then(commentsCount => {
-                  this.post.commentsCount = commentsCount;
-                });
               } else {
                 this.presentToast('Could not post Comment. Please retry.');
               }
